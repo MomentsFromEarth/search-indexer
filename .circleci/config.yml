@@ -1,0 +1,37 @@
+# Golang CircleCI 2.1 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+#
+
+jobs:
+  search-indexer-job:
+    docker:
+      - image: circleci/golang:1.13
+
+    working_directory: ~/search-indexer
+
+    steps:
+      - checkout
+      - run:
+          name: Install AWS CLI
+          command: sudo apt-get install python-dev && sudo apt-get install python-pip && sudo pip install awscli
+      - run: aws --version
+      - run:
+          name: Install AWS Go SDK
+          command: go get -u github.com/aws/aws-sdk-go && go get -u github.com/aws/aws-lambda-go/lambda
+      - run: ./build.sh
+      - deploy:
+          name: Deploy to AWS Lambda
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./deploy.sh
+            else
+              echo "Not master branch so not deploying MFE Search Indexer to AWS Lambda"
+            fi
+
+version: 2.1
+workflows:
+  search-indexer-workflow:
+    jobs:
+      - search-indexer-job:
+          context: AWS
