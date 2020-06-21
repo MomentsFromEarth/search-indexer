@@ -2,14 +2,23 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws/session"
 )
 
+// Request is a struct
+type Request struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+}
+
+// Response is a struct
+type Response struct {
+	Message string `json:"message"`
+	Ok      bool   `json:"ok"`
+}
+
 var qURL = "https://sqs.us-east-1.amazonaws.com/776913033148/search.fifo"
-var awsSession *session.Session
 
 // Handler is entrypoint
 func Handler(request Request) (Response, error) {
@@ -24,11 +33,4 @@ func Handler(request Request) (Response, error) {
 
 func main() {
 	lambda.Start(Handler)
-}
-
-func check(err error, msg string) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
