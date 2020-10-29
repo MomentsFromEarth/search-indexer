@@ -1,0 +1,6 @@
+node_modules
+*.csv
+es-mfe.json
+*.log
+*.txt
+.DS_Store
